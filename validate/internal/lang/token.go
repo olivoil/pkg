@@ -15,7 +15,9 @@ const (
 	// IDENT and the following are literal tokens.
 	IDENT      // validation name
 	BOUNDPARAM // $param
-	NUMBER     // 23.4
+	NUMBER     // 12.3
+	INTEGER    // 12
+	DURATION   // 12h
 	STRING     // "abc"
 	BADSTRING  // "abc
 	TRUE       // true
@@ -28,6 +30,7 @@ const (
 	LPAREN // (
 	RPAREN // )
 	COMMA  // ,
+	DOT    // .
 
 	operatorBeg
 	// OR and the following are Operators.
@@ -50,6 +53,8 @@ var tokens = [...]string{
 	IDENT:      "IDENT",
 	BOUNDPARAM: "BOUNDPARAM",
 	NUMBER:     "NUMBER",
+	INTEGER:    "INTEGER",
+	DURATION:   "DURATION",
 	STRING:     "STRING",
 	BADSTRING:  "BADSTRING",
 	TRUE:       "TRUE",
@@ -61,6 +66,7 @@ var tokens = [...]string{
 	LPAREN: "(",
 	RPAREN: ")",
 	COMMA:  ",",
+	DOT:    ".",
 
 	// Operators
 	OR:  "OR",

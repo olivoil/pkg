@@ -1,4 +1,3 @@
-
 # Validation language parser
 
 Parses validation string definitions into an AST.

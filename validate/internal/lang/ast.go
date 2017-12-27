@@ -5,6 +5,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 )
 
 var (
@@ -21,16 +22,18 @@ type Expr interface {
 	String() string
 }
 
-func (*BinaryExpr) expr()     {}
-func (*ParenExpr) expr()      {}
-func (*NegativeExpr) expr()   {}
-func (*EachExpr) expr()       {}
-func (*Call) expr()           {}
-func (*BoundParam) expr()     {}
-func (*StringLiteral) expr()  {}
-func (*BooleanLiteral) expr() {}
-func (*NumberLiteral) expr()  {}
-func (*RegexLiteral) expr()   {}
+func (*BinaryExpr) expr()      {}
+func (*ParenExpr) expr()       {}
+func (*NegativeExpr) expr()    {}
+func (*EachExpr) expr()        {}
+func (*Call) expr()            {}
+func (*BoundParam) expr()      {}
+func (*StringLiteral) expr()   {}
+func (*BooleanLiteral) expr()  {}
+func (*NumberLiteral) expr()   {}
+func (*DurationLiteral) expr() {}
+func (*IntegerLiteral) expr()  {}
+func (*RegexLiteral) expr()    {}
 
 // BinaryExpr represents an operation between two expressions.
 type BinaryExpr struct {
@@ -129,6 +132,22 @@ type NumberLiteral struct {
 
 // String returns a string representation of the literal.
 func (l *NumberLiteral) String() string { return strconv.FormatFloat(l.Val, 'f', 3, 64) }
+
+// DurationLiteral represents a duration literal.
+type DurationLiteral struct {
+	Val time.Duration
+}
+
+// String returns a string representation of the literal.
+func (l *DurationLiteral) String() string { return l.Val.String() }
+
+// IntegerLiteral represents an integer literal.
+type IntegerLiteral struct {
+	Val int64
+}
+
+// String returns a string representation of the literal.
+func (l *IntegerLiteral) String() string { return fmt.Sprintf("%d", l.Val) }
 
 // RegexLiteral represents a regular expression.
 type RegexLiteral struct {

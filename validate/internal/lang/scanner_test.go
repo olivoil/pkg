@@ -57,16 +57,34 @@ func TestScanner_Scan(t *testing.T) {
 		{s: `phone`, tok: lang.IDENT, lit: `phone`},
 		{s: `range(1,2)`, tok: lang.IDENT, lit: `range`},
 
+		// Booleans
 		{s: `true`, tok: lang.TRUE},
 		{s: `false`, tok: lang.FALSE},
 
+		// Strings
 		{s: `'testing 123!'`, tok: lang.STRING, lit: `testing 123!`},
 		{s: `'string'`, tok: lang.STRING, lit: `string`},
 		{s: `'foo\nbar'`, tok: lang.STRING, lit: "foo\nbar"},
 
-		{s: `1`, tok: lang.NUMBER, lit: "1"},
-		{s: `2.3`, tok: lang.NUMBER, lit: "2.3"},
+		// Numbers
+		{s: `100`, tok: lang.INTEGER, lit: `100`},
+		{s: `100.23`, tok: lang.NUMBER, lit: `100.23`},
+		{s: `.23`, tok: lang.NUMBER, lit: `.23`},
+		// {s: `.`, tok: lang.ILLEGAL, lit: `.`},
+		{s: `10.3s`, tok: lang.NUMBER, lit: `10.3`},
 
+		// Durations
+		{s: `10u`, tok: lang.DURATION, lit: `10u`},
+		{s: `10µ`, tok: lang.DURATION, lit: `10µ`},
+		{s: `10ms`, tok: lang.DURATION, lit: `10ms`},
+		{s: `1s`, tok: lang.DURATION, lit: `1s`},
+		{s: `10m`, tok: lang.DURATION, lit: `10m`},
+		{s: `10h`, tok: lang.DURATION, lit: `10h`},
+		{s: `10d`, tok: lang.DURATION, lit: `10d`},
+		{s: `10w`, tok: lang.DURATION, lit: `10w`},
+		{s: `10x`, tok: lang.DURATION, lit: `10x`}, // non-duration unit, but scanned as a duration value
+
+		// Keywords
 		{s: `EACH`, tok: lang.EACH},
 		{s: `each(!zero)`, tok: lang.EACH},
 
@@ -99,7 +117,7 @@ func (r multiScanResult) String() string {
 // Ensure the scanner can scan a series of tokens correctly.
 func TestScanner_Scan_Multi(t *testing.T) {
 	tests := map[string][]multiScanResult{
-		`required,!contains('example.com'),range(4,15.5),email|phone`: []multiScanResult{
+		`required,!contains('example.com'),range(4.0,15.5),email|phone`: []multiScanResult{
 			{tok: lang.IDENT, pos: 0, lit: `required`},
 			{tok: lang.COMMA, pos: 8, lit: ``},
 			{tok: lang.NOT, pos: 9, lit: ``},
@@ -110,15 +128,15 @@ func TestScanner_Scan_Multi(t *testing.T) {
 			{tok: lang.COMMA, pos: 33, lit: ``},
 			{tok: lang.IDENT, pos: 34, lit: `range`},
 			{tok: lang.LPAREN, pos: 39, lit: ``},
-			{tok: lang.NUMBER, pos: 40, lit: `4`},
-			{tok: lang.COMMA, pos: 41, lit: ``},
-			{tok: lang.NUMBER, pos: 42, lit: `15.5`},
-			{tok: lang.RPAREN, pos: 46, lit: ``},
-			{tok: lang.COMMA, pos: 47, lit: ``},
-			{tok: lang.IDENT, pos: 48, lit: `email`},
-			{tok: lang.OR, pos: 53, lit: ``},
-			{tok: lang.IDENT, pos: 54, lit: `phone`},
-			{tok: lang.EOF, pos: 60, lit: ``},
+			{tok: lang.NUMBER, pos: 40, lit: `4.0`},
+			{tok: lang.COMMA, pos: 43, lit: ``},
+			{tok: lang.NUMBER, pos: 44, lit: `15.5`},
+			{tok: lang.RPAREN, pos: 48, lit: ``},
+			{tok: lang.COMMA, pos: 49, lit: ``},
+			{tok: lang.IDENT, pos: 50, lit: `email`},
+			{tok: lang.OR, pos: 55, lit: ``},
+			{tok: lang.IDENT, pos: 56, lit: `phone`},
+			{tok: lang.EOF, pos: 62, lit: ``},
 		},
 		`required and not email`: []multiScanResult{
 			{tok: lang.IDENT, pos: 0, lit: `required`},
@@ -147,6 +165,20 @@ func TestScanner_Scan_Multi(t *testing.T) {
 			{tok: lang.IDENT, pos: 14, lit: `required`},
 			{tok: lang.RPAREN, pos: 22, lit: ``},
 			{tok: lang.EOF, pos: 23, lit: ``},
+		},
+		`max(15m)`: []multiScanResult{
+			{tok: lang.IDENT, pos: 0, lit: `max`},
+			{tok: lang.LPAREN, pos: 3, lit: ``},
+			{tok: lang.DURATION, pos: 4, lit: `15m`},
+			{tok: lang.RPAREN, pos: 7, lit: ``},
+			{tok: lang.EOF, pos: 8, lit: ``},
+		},
+		`lte(15)`: []multiScanResult{
+			{tok: lang.IDENT, pos: 0, lit: `lte`},
+			{tok: lang.LPAREN, pos: 3, lit: ``},
+			{tok: lang.INTEGER, pos: 4, lit: `15`},
+			{tok: lang.RPAREN, pos: 6, lit: ``},
+			{tok: lang.EOF, pos: 7, lit: ``},
 		},
 	}
 

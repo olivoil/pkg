@@ -44,6 +44,13 @@ func (s *Scanner) Scan() (tok Token, pos int, lit string) {
 		return EOF, pos, ""
 	case '\'':
 		return s.scanString()
+	case '.':
+		ch1, _ := s.r.read()
+		s.r.unread()
+		if isDigit(ch1) {
+			return s.scanNumber()
+		}
+		return DOT, pos, ""
 	case '/':
 		s.r.unread()
 		return s.ScanRegex()
@@ -347,7 +354,9 @@ func (s *Scanner) scanNumber() (tok Token, pos int, lit string) {
 	_, _ = buf.WriteString(s.scanDigits())
 
 	// If next code points are a full stop and digit then consume them.
+	isDecimal := false
 	if ch0, _ := s.r.read(); ch0 == '.' {
+		isDecimal = true
 		if ch1, _ := s.r.read(); isDigit(ch1) {
 			_, _ = buf.WriteRune(ch0)
 			_, _ = buf.WriteRune(ch1)
@@ -359,6 +368,35 @@ func (s *Scanner) scanNumber() (tok Token, pos int, lit string) {
 		s.r.unread()
 	}
 
+	// Read as a duration or integer if it doesn't have a fractional part.
+	if !isDecimal {
+		// If the next rune is a letter then this is a duration token.
+		if ch0, _ := s.r.read(); isLetter(ch0) || ch0 == 'µ' {
+			_, _ = buf.WriteRune(ch0)
+			for {
+				ch1, _ := s.r.read()
+				if !isLetter(ch1) && ch1 != 'µ' {
+					s.r.unread()
+					break
+				}
+				_, _ = buf.WriteRune(ch1)
+			}
+
+			// Continue reading digits and letters as part of this token.
+			for {
+				if ch0, _ := s.r.read(); isLetter(ch0) || ch0 == 'µ' || isDigit(ch0) {
+					_, _ = buf.WriteRune(ch0)
+				} else {
+					s.r.unread()
+					break
+				}
+			}
+			return DURATION, pos, buf.String()
+		}
+
+		s.r.unread()
+		return INTEGER, pos, buf.String()
+	}
 	return NUMBER, pos, buf.String()
 }
 

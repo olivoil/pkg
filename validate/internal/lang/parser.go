@@ -6,6 +6,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 )
 
 // Parser represents an validation field tag parser.
@@ -160,17 +161,18 @@ func (p *Parser) parseUnaryExpr() (Expr, error) {
 			return nil, &ParseError{Message: "unable to parse number", Pos: pos}
 		}
 		return &NumberLiteral{Val: v}, nil
-	// case INTEGER:
-	// 	v, err := strconv.ParseInt(lit, 10, 64)
-	// 	if err != nil {
-	// 		// The literal may be too large to fit into an int64. If it is, use an unsigned integer.
-	// 		// The check for negative numbers is handled somewhere else so this should always be a positive number.
-	// 		if v, err := strconv.ParseUint(lit, 10, 64); err == nil {
-	// 			return &UnsignedLiteral{Val: v}, nil
-	// 		}
-	// 		return nil, &ParseError{Message: "unable to parse integer", Pos: pos}
-	// 	}
-	// 	return &IntegerLiteral{Val: v}, nil
+	case INTEGER:
+		v, err := strconv.ParseInt(lit, 10, 64)
+		if err != nil {
+			return nil, &ParseError{Message: "unable to parse integer", Pos: pos}
+		}
+		return &IntegerLiteral{Val: v}, nil
+	case DURATION:
+		v, err := time.ParseDuration(lit)
+		if err != nil {
+			return nil, err
+		}
+		return &DurationLiteral{Val: v}, nil
 	case TRUE, FALSE:
 		return &BooleanLiteral{Val: (tok == TRUE)}, nil
 	case REGEX:

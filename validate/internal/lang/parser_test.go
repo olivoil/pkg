@@ -54,7 +54,7 @@ func TestParser_Parse(t *testing.T) {
 			expr: &lang.Call{
 				Name: "len",
 				Args: []lang.Expr{
-					&lang.NumberLiteral{Val: 3},
+					&lang.IntegerLiteral{Val: 3},
 				},
 			},
 		},
@@ -64,7 +64,7 @@ func TestParser_Parse(t *testing.T) {
 				Expr: &lang.Call{
 					Name: "len",
 					Args: []lang.Expr{
-						&lang.NumberLiteral{Val: 4},
+						&lang.IntegerLiteral{Val: 4},
 					},
 				},
 			},
@@ -101,7 +101,7 @@ func TestParser_Parse(t *testing.T) {
 				RHS: &lang.Call{
 					Name: "range",
 					Args: []lang.Expr{
-						&lang.NumberLiteral{Val: 0},
+						&lang.IntegerLiteral{Val: 0},
 						&lang.BoundParam{
 							Path: `Account.Balance`,
 						},
@@ -131,8 +131,8 @@ func TestParser_Parse(t *testing.T) {
 						RHS: &lang.Call{
 							Name: "range",
 							Args: []lang.Expr{
-								&lang.NumberLiteral{Val: 4},
-								&lang.NumberLiteral{Val: 15},
+								&lang.IntegerLiteral{Val: 4},
+								&lang.IntegerLiteral{Val: 15},
 							},
 						},
 					},
