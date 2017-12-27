@@ -90,6 +90,26 @@ func TestParser_Parse(t *testing.T) {
 			},
 		},
 		{
+			s: `required, numeric, range(0, $.Account.Balance)`,
+			expr: &lang.BinaryExpr{
+				Op: lang.AND,
+				LHS: &lang.BinaryExpr{
+					Op:  lang.AND,
+					LHS: &lang.Call{Name: "required"},
+					RHS: &lang.Call{Name: "numeric"},
+				},
+				RHS: &lang.Call{
+					Name: "range",
+					Args: []lang.Expr{
+						&lang.NumberLiteral{Val: 0},
+						&lang.BoundParam{
+							Path: `Account.Balance`,
+						},
+					},
+				},
+			},
+		},
+		{
 			s: `required,!numeric,range(4,15),email|phone,match(/(?i)^(.+@example\.com)|(\+1\d{10})$/)`,
 			expr: &lang.BinaryExpr{
 				Op: lang.AND,

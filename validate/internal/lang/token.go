@@ -13,15 +13,16 @@ const (
 
 	literalBeg
 	// IDENT and the following are literal tokens.
-	IDENT     // validation name
-	NUMBER    // 23.4
-	STRING    // "abc"
-	BADSTRING // "abc
-	TRUE      // true
-	FALSE     // false
-	REGEX     // Regular expressions
-	BADESCAPE // \q
-	BADREGEX  // `.*
+	IDENT      // validation name
+	BOUNDPARAM // $param
+	NUMBER     // 23.4
+	STRING     // "abc"
+	BADSTRING  // "abc
+	TRUE       // true
+	FALSE      // false
+	REGEX      // Regular expressions
+	BADESCAPE  // \q
+	BADREGEX   // `.*
 	literalEnd
 
 	LPAREN // (
@@ -46,15 +47,16 @@ var tokens = [...]string{
 	WS:      "WS",
 
 	// Literals
-	IDENT:     "IDENT",
-	NUMBER:    "NUMBER",
-	STRING:    "STRING",
-	BADSTRING: "BADSTRING",
-	TRUE:      "TRUE",
-	FALSE:     "FALSE",
-	REGEX:     "REGEX",
-	BADESCAPE: "BADESCAPE",
-	BADREGEX:  "BADREGEX",
+	IDENT:      "IDENT",
+	BOUNDPARAM: "BOUNDPARAM",
+	NUMBER:     "NUMBER",
+	STRING:     "STRING",
+	BADSTRING:  "BADSTRING",
+	TRUE:       "TRUE",
+	FALSE:      "FALSE",
+	REGEX:      "REGEX",
+	BADESCAPE:  "BADESCAPE",
+	BADREGEX:   "BADREGEX",
 
 	LPAREN: "(",
 	RPAREN: ")",

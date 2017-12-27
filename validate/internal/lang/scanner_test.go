@@ -69,6 +69,10 @@ func TestScanner_Scan(t *testing.T) {
 
 		{s: `EACH`, tok: lang.EACH},
 		{s: `each(!zero)`, tok: lang.EACH},
+
+		// Bound params
+		{s: `$Title`, tok: lang.BOUNDPARAM, lit: `Title`},
+		{s: `$.Book.Description`, tok: lang.BOUNDPARAM, lit: `Book.Description`},
 	}
 
 	for i, tc := range tests {

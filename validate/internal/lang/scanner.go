@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"regexp"
 )
 
 // Scanner represents a lexical scanner.
@@ -56,6 +57,9 @@ func (s *Scanner) Scan() (tok Token, pos int, lit string) {
 		return RPAREN, pos, ""
 	case ',':
 		return COMMA, pos, ""
+	case '$':
+		s.r.unread()
+		return s.scanBoundParam()
 	}
 
 	return ILLEGAL, pos, string(ch0)
@@ -276,6 +280,29 @@ func (s *Scanner) scanIdent(lookup bool) (tok Token, pos int, lit string) {
 	return IDENT, pos, lit
 }
 
+func (s *Scanner) scanBoundParam() (tok Token, pos int, lit string) {
+	// Save the starting position of the identifier.
+	_, pos = s.r.read()
+	s.r.unread()
+
+	var buf bytes.Buffer
+	for {
+		if ch, _ := s.r.read(); ch == eof {
+			break
+		} else if ch == '$' || ch == '.' || isIdentChar(ch) {
+			s.r.unread()
+			buf.WriteString(ScanBareParam(s.r))
+		} else {
+			s.r.unread()
+			break
+		}
+	}
+	prefix := regexp.MustCompile(`^\$\.?`)
+	lit = prefix.ReplaceAllString(buf.String(), "")
+
+	return BOUNDPARAM, pos, lit
+}
+
 // ScanRegex consumes a token to find escapes
 func (s *Scanner) ScanRegex() (tok Token, pos int, lit string) {
 	_, pos = s.r.curr()
@@ -458,6 +485,7 @@ func ScanBareIdent(r io.RuneScanner) string {
 	// Read every ident character into the buffer.
 	// Non-ident characters and EOF will cause the loop to exit.
 	var buf bytes.Buffer
+
 	for {
 		ch, _, err := r.ReadRune()
 		if err != nil {
@@ -469,5 +497,27 @@ func ScanBareIdent(r io.RuneScanner) string {
 			_, _ = buf.WriteRune(ch)
 		}
 	}
+
+	return buf.String()
+}
+
+// ScanBareParam reads bare bound param identifier from a rune reader.
+func ScanBareParam(r io.RuneScanner) string {
+	// Read every param character into the buffer.
+	// Non-param characters and EOF will cause the loop to exit.
+	var buf bytes.Buffer
+
+	for {
+		ch, _, err := r.ReadRune()
+		if err != nil {
+			break
+		} else if isIdentChar(ch) || ch == '$' || ch == '.' {
+			_, _ = buf.WriteRune(ch)
+		} else {
+			r.UnreadRune()
+			break
+		}
+	}
+
 	return buf.String()
 }

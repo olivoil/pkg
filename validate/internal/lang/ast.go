@@ -26,6 +26,7 @@ func (*ParenExpr) expr()      {}
 func (*NegativeExpr) expr()   {}
 func (*EachExpr) expr()       {}
 func (*Call) expr()           {}
+func (*BoundParam) expr()     {}
 func (*StringLiteral) expr()  {}
 func (*BooleanLiteral) expr() {}
 func (*NumberLiteral) expr()  {}
@@ -83,6 +84,16 @@ func (c *Call) String() string {
 
 	// Write function name and args.
 	return fmt.Sprintf("%s(%s)", c.Name, strings.Join(str, ", "))
+}
+
+// BoundParam represents the value of a field by name, useful when validating a struct.
+type BoundParam struct {
+	Path string
+}
+
+// String returns a string representation of the bound param.
+func (b *BoundParam) String() string {
+	return fmt.Sprintf("$.%s", b.Path)
 }
 
 // StringLiteral represents a string literal.
