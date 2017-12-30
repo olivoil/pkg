@@ -35,6 +35,11 @@ func (*DurationLiteral) expr() {}
 func (*IntegerLiteral) expr()  {}
 func (*RegexLiteral) expr()    {}
 
+type Literal interface {
+	expr()
+	Interface() interface{}
+}
+
 // BinaryExpr represents an operation between two expressions.
 type BinaryExpr struct {
 	Op  Token // AND/OR
@@ -107,6 +112,11 @@ type StringLiteral struct {
 // String returns a string representation of the literal.
 func (l *StringLiteral) String() string { return QuoteString(l.Val) }
 
+// Interface returns the literal value.
+func (l *StringLiteral) Interface() interface{} {
+	return l.Val
+}
+
 // QuoteString returns a quoted string.
 func QuoteString(s string) string {
 	return `'` + qsReplacer.Replace(s) + `'`
@@ -125,6 +135,11 @@ func (l *BooleanLiteral) String() string {
 	return "false"
 }
 
+// Interface returns the literal value.
+func (l *BooleanLiteral) Interface() interface{} {
+	return l.Val
+}
+
 // NumberLiteral represents a numeric literal.
 type NumberLiteral struct {
 	Val float64
@@ -132,6 +147,11 @@ type NumberLiteral struct {
 
 // String returns a string representation of the literal.
 func (l *NumberLiteral) String() string { return strconv.FormatFloat(l.Val, 'f', 3, 64) }
+
+// Interface returns the literal value.
+func (l *NumberLiteral) Interface() interface{} {
+	return l.Val
+}
 
 // DurationLiteral represents a duration literal.
 type DurationLiteral struct {
@@ -141,6 +161,11 @@ type DurationLiteral struct {
 // String returns a string representation of the literal.
 func (l *DurationLiteral) String() string { return l.Val.String() }
 
+// Interface returns the literal value.
+func (l *DurationLiteral) Interface() interface{} {
+	return l.Val
+}
+
 // IntegerLiteral represents an integer literal.
 type IntegerLiteral struct {
 	Val int64
@@ -148,6 +173,11 @@ type IntegerLiteral struct {
 
 // String returns a string representation of the literal.
 func (l *IntegerLiteral) String() string { return fmt.Sprintf("%d", l.Val) }
+
+// Interface returns the literal value.
+func (l *IntegerLiteral) Interface() interface{} {
+	return l.Val
+}
 
 // RegexLiteral represents a regular expression.
 type RegexLiteral struct {
@@ -160,4 +190,9 @@ func (r *RegexLiteral) String() string {
 		return fmt.Sprintf("/%s/", strings.Replace(r.Val.String(), `/`, `\/`, -1))
 	}
 	return ""
+}
+
+// Interface returns the literal value.
+func (r *RegexLiteral) Interface() interface{} {
+	return r.Val
 }

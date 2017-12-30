@@ -1,0 +1,32 @@
+package validate
+
+import "github.com/cheekybits/genny/generic"
+
+// T1 is a placeholder for a specific type.
+type T1 generic.Type
+
+// T2 is a placeholder for a specific type.
+type T2 generic.Type
+
+// T1ValidationWithT2ArgsFunc is a custom validation function that can be applied to a T1 value with T2 args.
+type T1ValidationWithT2ArgsFunc func(i T1, args ...T2) error
+
+// Validate implements Validation.
+func (v T1ValidationWithT2ArgsFunc) Validate(i interface{}, args ...interface{}) error {
+	t1, ok := i.(T1)
+	if !ok {
+		return errors.Wrap(ErrIncompatibleFieldType, "expected a T1")
+	}
+
+	t2s := []T2{}
+	for _, arg := range args {
+		t2, ok := arg.(T2)
+		if !ok {
+			return errors.Wrap(ErrInvalidParamType, "expected a T2")
+		}
+
+		t2s = append(t2s, t2)
+	}
+
+	return v(t1, t2s...)
+}

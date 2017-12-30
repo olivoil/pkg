@@ -1,0 +1,19 @@
+package validate
+
+import "github.com/cheekybits/genny/generic"
+
+// T1 is a placeholder for a specific type.
+type T1 generic.Type
+
+// SimpleT1ValidationFunc is a custom validation function that can be applied to a T1 value with no arguments.
+type SimpleT1ValidationFunc func(i T1) error
+
+// Validate implements Validation.
+func (v SimpleT1ValidationFunc) Validate(i interface{}, args ...interface{}) error {
+	t1, ok := i.(T1)
+	if !ok {
+		return errors.Wrapf(ErrIncompatibleFieldType, "expected %v to be a T1", i)
+	}
+
+	return v(t1)
+}

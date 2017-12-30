@@ -1,0 +1,53 @@
+package validate
+
+import (
+	"fmt"
+
+	"github.com/cheekybits/genny/generic"
+)
+
+type T1 generic.Number
+
+// lessThanT1 validates `i` is less than `others`.
+func lessThanT1(i T1, others ...T1) error {
+	for _, other := range others {
+		if i >= other {
+			return fmt.Errorf("expected %v to be less than %v", i, other)
+		}
+	}
+
+	return nil
+}
+
+// lessThanOrEqualToT1 validates `i` is less than or equal to `others`.
+func lessThanOrEqualToT1(i T1, others ...T1) error {
+	for _, other := range others {
+		if i > other {
+			return fmt.Errorf("expected %v to be less than or equal to %v", i, other)
+		}
+	}
+
+	return nil
+}
+
+// greaterThanT1 validates `i` is greater than `others`.
+func greaterThanT1(i T1, others ...T1) error {
+	for _, other := range others {
+		if i <= other {
+			return fmt.Errorf("expected %v to be greater than %v", i, other)
+		}
+	}
+
+	return nil
+}
+
+// greaterThanOrEqualToT1 validates `i` is greater than or equal to `others`.
+func greaterThanOrEqualToT1(i T1, others ...T1) error {
+	for _, other := range others {
+		if i < other {
+			return fmt.Errorf("expected %v to be greater than or equal to %v", i, other)
+		}
+	}
+
+	return nil
+}
